@@ -2,10 +2,7 @@ package AuthService.AuthService.Entity;
 
 import AuthService.AuthService.Enum.Role;
 import AuthService.AuthService.Enum.Status;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +17,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "\"user\"")
 public class User {
 
     @Id
