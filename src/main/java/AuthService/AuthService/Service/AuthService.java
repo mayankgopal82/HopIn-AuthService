@@ -2,11 +2,13 @@ package AuthService.AuthService.Service;
 
 import AuthService.AuthService.Client.PassengerClient;
 import AuthService.AuthService.DTO.SignupPassengerRequestDto;
+import AuthService.AuthService.DTO.SignupPassengerResponseDto;
 import AuthService.AuthService.Entity.User;
 import AuthService.AuthService.Enum.Role;
 import AuthService.AuthService.Enum.Status;
 import AuthService.AuthService.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -20,8 +22,11 @@ public class AuthService {
     @Autowired
     UserRepository userRepo;
 
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
-    public void signupPassenger(SignupPassengerRequestDto request){
+
+    public SignupPassengerResponseDto signupPassenger(SignupPassengerRequestDto request){
 
         request.setRole(Role.PASSENGER);
         passengerClient.registerPassenger(request);
@@ -36,8 +41,15 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setMobile(request.getMobile());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepo.save(user);
 
+        //since builder is not working so using getters and setters -
+        SignupPassengerResponseDto response = new SignupPassengerResponseDto();
+        response.setFirstName(user.getFirstName());
+        response.setId(user.getId());
+        response.setPassword(user.getPassword());
+        // Optionally set other fields if needed
+        return response;
     }
 }
