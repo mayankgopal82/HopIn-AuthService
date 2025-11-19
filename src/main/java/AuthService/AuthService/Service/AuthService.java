@@ -49,6 +49,7 @@ public class AuthService {
         response.setFirstName(user.getFirstName());
         response.setId(user.getId());
         response.setPassword(user.getPassword());
+        response.setEmail(user.getEmail());
         // Optionally set other fields if needed
         return response;
     }
