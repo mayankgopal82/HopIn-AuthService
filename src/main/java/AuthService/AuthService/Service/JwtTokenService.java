@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtService implements CommandLineRunner {
+public class JwtTokenService {
 
     @Value("${jwt.expiry}")
     private int expiry;
@@ -24,7 +24,7 @@ public class JwtService implements CommandLineRunner {
     private String secret;
 
 
-    private String createToken(Map<String,Object> payload,String username){
+    public String createToken(Map<String,Object> payload,String username){
         Date now = new Date();
         Date expiryDate = new Date(now.getTime()+expiry*1000L);
 
@@ -39,13 +39,21 @@ public class JwtService implements CommandLineRunner {
                 .compact();
     }
 
-    private String extractUserName (String token){
+    public String extractUserName (String token){
         return extractClaim(token,Claims::getSubject);
     }
-    private boolean validateToken(String token, User user){
+    public  boolean validateToken(String token, User user){
         return user.getEmail().equals(extractUserName(token)) && !isTokenExpired(token);
     }
-    private boolean isTokenExpired(String token){
+    public boolean validateToken(String token){
+        try{
+            extractAllClaims(token);
+            return !isTokenExpired(token);
+        }catch(Exception e){
+            return false;
+        }
+    }
+    public boolean isTokenExpired(String token){
         return extractExpiry(token).before(new Date());
     }
     private Date extractExpiry(String token){
@@ -60,7 +68,7 @@ public class JwtService implements CommandLineRunner {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
     //Extract all claims (payload) from the token
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         SecretKey key = getSignKey();
         return Jwts.parser()
                 .verifyWith(key)
@@ -68,7 +76,7 @@ public class JwtService implements CommandLineRunner {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-    @Override
+/*    @Override
     public void run(String... args) throws Exception {
         User user  = new User();
         user.setEmail("mb@gmail.com");
@@ -86,4 +94,6 @@ public class JwtService implements CommandLineRunner {
         }else{
             System.out.println("Invalid Token");
         }
-    }}
+    }*/
+}
+
